@@ -123,11 +123,11 @@
     /*label*/
     --text-label: 24px;
     --font-weight-label: 500;
-    /*label*/
-    --text-label: 16px;
-    --font-weight-label: 400;
-    --text-label: 12px;
-    --font-weight-label: 400;
+    /*text*/
+    --text-text-regular: 16px;
+    --font-weight-text-regular: 400;
+    --text-text-small: 12px;
+    --font-weight-text-small: 400;
 
 }
 

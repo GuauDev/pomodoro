@@ -4,6 +4,8 @@ export default function App() {
       <p className="text-timer text-black leading-timer font-timer-paused">1234567890</p>
       <p className="text-timer text-black leading-timer font-timer-running">1234567890</p>
       <p className="text-heading-h1 font-heading-h1">Pomo</p>
+      <p className="text-text-regular font-text-regular">Regular</p>
+      <p className="text-text-small font-text-small">Small</p>
     </div>
   );
 }
