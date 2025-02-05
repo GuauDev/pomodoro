@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: "Roboto Flex";
+    src: url(./assets/fonts/RobotoFlex.ttf);
+    font-weight: 100 900;
+    font-stretch: 75% 125%;
+    font-style: normal;
+}
+
+
 @theme {
     --color-white: #ffffff;
     --color-black: #000000;
@@ -102,6 +111,26 @@
     --color-blue-alpha-200: #4CACFF3d;
     --color-blue-alpha-100: #4CACFF26;
     --color-blue-alpha-50: #4CACFF0d;
+    --font-roboto-flex: "Roboto Flex";
+    /*Timer*/
+    --text-timer: 256px;
+    --leading-timer: 85%;
+    --font-weight-timer-paused: 200;
+    --font-weight-timer-running: 800;
+    /*Heading*/
+    --text-heading-h1: 24px;
+    --font-weight-heading-h1: 700;
+    /*label*/
+    --text-label: 24px;
+    --font-weight-label: 500;
+    /*label*/
+    --text-label: 16px;
+    --font-weight-label: 400;
+    --text-label: 12px;
+    --font-weight-label: 400;
 
+}
 
+.text-optical {
+    font-variation-settings: "opsz" 20;
 }
