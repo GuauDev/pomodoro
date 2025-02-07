@@ -1,19 +1,179 @@
+import { useState } from "react";
+import {
+  BrainIcon,
+  CoffeeIcon,
+  FastForwardIcon,
+  PauseIcon,
+  PlayIcon,
+  ThreeDotsOutlineIcon,
+} from "./assets/icons";
+import clsx from "clsx";
+
 export default function App() {
+  const [state, setState] = useState<"focus" | "short break" | "long break">(
+    "focus",
+  );
+  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [colorMode, setColorMode] = useState<"light" | "dark">("light");
   return (
-    <main className="bg-red-50 max-h-screen h-screen max-w-screen font-roboto-flex flex justify-center items-center text-optical ">
+    <main
+      className={clsx(
+        "font-roboto-flex text-optical flex h-screen max-h-screen max-w-screen items-center justify-center",
+        {
+          "bg-red-50 selection:bg-red-900/20":
+            colorMode === "light" && state === "focus",
+          "bg-green-50 selection:bg-green-900/20":
+            colorMode === "light" && state === "short break",
+          "bg-blue-50 selection:bg-blue-900/20":
+            colorMode === "light" && state === "long break",
+          "bg-red-950 selection:bg-red-900/20":
+            colorMode === "dark" && state === "focus",
+          "bg-green-950 selection:bg-green-900/20":
+            colorMode === "dark" && state === "short break",
+          "bg-blue-950 selection:bg-blue-900/20":
+            colorMode === "dark" && state === "long break",
+        },
+      )}
+    >
       <div className="flex flex-col items-center gap-[32px]">
-        <div className="border-2 border-red-900 rounded-full flex items-center justify-center w-[136px] h-[48px] px-[16px] py-[8px] bg-red-alpha-100">
-          <span className="text-red-900 font-label text-label">Focus</span>
+        <div
+          className={clsx(
+            "flex items-center justify-center gap-[8px] rounded-[9999px] border-2 px-[14px] py-[6px]",
+            {
+              "bg-red-alpha-100 border-red-900 text-red-900":
+                state === "focus" && colorMode === "light",
+              "bg-green-alpha-100 border-green-900 text-green-900":
+                state === "short break" && colorMode === "light",
+              "bg-blue-alpha-100 border-blue-900 text-blue-900":
+                state === "long break" && colorMode === "light",
+              "bg-red-alpha-100 border-red-50 text-red-50":
+                state === "focus" && colorMode === "dark",
+              "bg-green-alpha-100 border-green-50 text-green-50":
+                state === "short break" && colorMode === "dark",
+              "bg-blue-alpha-100 border-blue-50 text-blue-50":
+                state === "long break" && colorMode === "dark",
+            },
+          )}
+        >
+          {state === "focus" ? <BrainIcon /> : <CoffeeIcon />}
+
+          <span className="font-label text-label">
+            {state === "focus"
+              ? "Focus"
+              : state === "short break"
+                ? "Short Break"
+                : "Long Break"}
+          </span>
         </div>
-        <h1 className="font-timer-paused leading-timer text-timer text-red-900">25</h1>
-        <h1 className="font-timer-paused leading-timer text-timer text-red-900">00</h1>
-        <div className="flex gap-[16px] items-center justify-center">
-          <button className="p-[24px] w-[80px] h-[80px] bg-red-alpha-100 rounded-[24px]" type="button">r</button>
-          <button className="px-[48] py-[32] w-[128px] h-[96px] bg-red-alpha-700 rounded-[32px]" type="button">l</button>
-          <button className="p-[24px] w-[80px] h-[80px] bg-red-alpha-100 rounded-[24px]" type="button">r</button>
+
+        <h1
+          className={clsx(
+            "leading-timer text-timer duration-200",
+            {
+              "font-timer-paused": !isRunning,
+              "font-timer-running": isRunning,
+            },
+            {
+              "text-red-900": state === "focus" && colorMode === "light",
+              "text-green-900":
+                state === "short break" && colorMode === "light",
+              "text-blue-900": state === "long break" && colorMode === "light",
+              "text-red-50": state === "focus" && colorMode === "dark",
+              "text-green-50": state === "short break" && colorMode === "dark",
+              "text-blue-50": state === "long break" && colorMode === "dark",
+            },
+          )}
+        >
+          25
+        </h1>
+        <h1
+          className={clsx(
+            "leading-timer text-timer duration-200",
+            {
+              "font-timer-paused": !isRunning,
+              "font-timer-running": isRunning,
+            },
+            {
+              "text-red-900": state === "focus" && colorMode === "light",
+              "text-green-900":
+                state === "short break" && colorMode === "light",
+              "text-blue-900": state === "long break" && colorMode === "light",
+              "text-red-50": state === "focus" && colorMode === "dark",
+              "text-green-50": state === "short break" && colorMode === "dark",
+              "text-blue-50": state === "long break" && colorMode === "dark",
+            },
+          )}
+        >
+          00
+        </h1>
+
+        <div className="flex items-center justify-center gap-[16px]">
+          <button
+            className={clsx("h-[80px] w-[80px] rounded-[24px] p-[24px]", {
+              "bg-red-alpha-100 text-red-900":
+                state === "focus" && colorMode === "light",
+              "bg-green-alpha-100 text-green-900":
+                state === "short break" && colorMode === "light",
+              "bg-blue-alpha-100 text-blue-900":
+                state === "long break" && colorMode === "light",
+              "bg-red-alpha-100 text-red-100":
+                state === "focus" && colorMode === "dark",
+              "bg-green-alpha-100 text-green-100":
+                state === "short break" && colorMode === "dark",
+              "bg-blue-alpha-100 text-blue-100":
+                state === "long break" && colorMode === "dark",
+            })}
+            type="button"
+          >
+            <ThreeDotsOutlineIcon />
+          </button>
+          <button
+            className={clsx(
+              "flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
+              {
+                "bg-red-alpha-600 text-red-900":
+                  state === "focus" && colorMode === "light",
+                "bg-green-alpha-600 text-green-900":
+                  state === "short break" && colorMode === "light",
+                "bg-blue-alpha-700 text-blue-900":
+                  state === "long break" && colorMode === "light",
+                "bg-red-alpha-700 text-red-50":
+                  state === "focus" && colorMode === "dark",
+                "bg-green-alpha-700 text-green-50":
+                  state === "short break" && colorMode === "dark",
+                "bg-blue-alpha-700 text-blue-50":
+                  state === "long break" && colorMode === "dark",
+              },
+            )}
+            type="button"
+            onClick={() => setIsRunning(!isRunning)}
+          >
+            {isRunning ? <PauseIcon /> : <PlayIcon />}
+          </button>
+          <button
+            className={clsx(
+              "flex h-[80px] w-[80px] items-center justify-center rounded-[24px] p-[24px]",
+              {
+                "bg-red-alpha-100 text-red-900":
+                  state === "focus" && colorMode === "light",
+                "bg-green-alpha-100 text-green-900":
+                  state === "short break" && colorMode === "light",
+                "bg-blue-alpha-100 text-blue-900":
+                  state === "long break" && colorMode === "light",
+                "bg-red-alpha-100 text-red-100":
+                  state === "focus" && colorMode === "dark",
+                "bg-green-alpha-100 text-green-100":
+                  state === "short break" && colorMode === "dark",
+                "bg-blue-alpha-100 text-blue-100":
+                  state === "long break" && colorMode === "dark",
+              },
+            )}
+            type="button"
+          >
+            <FastForwardIcon />
+          </button>
         </div>
       </div>
-
     </main>
   );
 }
