@@ -10,11 +10,11 @@ import {
 import clsx from "clsx";
 
 export default function App() {
-  const [state, setState] = useState<"focus" | "short break" | "long break">(
-    "focus",
+  const [state] = useState<"focus" | "short break" | "long break">(
+    "long break",
   );
   const [isRunning, setIsRunning] = useState<boolean>(true);
-  const [colorMode, setColorMode] = useState<"light" | "dark">("light");
+  const [colorMode] = useState<"light" | "dark">("dark");
   return (
     <main
       className={clsx(
