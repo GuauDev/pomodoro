@@ -10,11 +10,22 @@ import {
 import clsx from "clsx";
 
 export default function App() {
-  const [state] = useState<"focus" | "short break" | "long break">(
-    "long break",
-  );
-  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [state] = useState<"focus" | "short break" | "long break">("focus");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
   const [colorMode] = useState<"light" | "dark">("dark");
+  const [seconds, setSeconds] = useState<number>(1500);
+  const [intervalId, setIntervalId] = useState<number | null>(1500);
+  const onPlay = () => {
+    const id = setInterval(() => {
+      setSeconds((sec) => sec - 1);
+    }, 1000);
+    setIntervalId(id);
+  };
+  const onPause = () => {
+    clearInterval(Number(intervalId));
+    setIntervalId(null);
+  };
+
   return (
     <main
       className={clsx(
@@ -84,7 +95,7 @@ export default function App() {
             },
           )}
         >
-          25
+          {String(Math.floor(seconds / 60)).padStart(2, "0")}
         </h1>
         <h1
           className={clsx(
@@ -104,7 +115,7 @@ export default function App() {
             },
           )}
         >
-          00
+          {String(Math.floor(seconds % 60)).padStart(2, "0")}
         </h1>
 
         <div className="flex items-center justify-center gap-[16px]">
@@ -129,7 +140,7 @@ export default function App() {
           </button>
           <button
             className={clsx(
-              "flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
+              "flex h-[96px] w-[128px] cursor-row-resize items-center justify-center rounded-[32px] px-[48] py-[32]",
               {
                 "bg-red-alpha-600 text-red-900":
                   state === "focus" && colorMode === "light",
@@ -146,7 +157,14 @@ export default function App() {
               },
             )}
             type="button"
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={() => {
+              setIsRunning(!isRunning);
+              if (!isRunning) {
+                onPlay();
+              } else {
+                onPause();
+              }
+            }}
           >
             {isRunning ? <PauseIcon /> : <PlayIcon />}
           </button>
