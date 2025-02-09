@@ -140,7 +140,7 @@ export default function App() {
           </button>
           <button
             className={clsx(
-              "flex h-[96px] w-[128px] cursor-row-resize items-center justify-center rounded-[32px] px-[48] py-[32]",
+              "flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
               {
                 "bg-red-alpha-600 text-red-900":
                   state === "focus" && colorMode === "light",
