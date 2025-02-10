@@ -10,11 +10,15 @@ import {
 import clsx from "clsx";
 
 export default function App() {
-  const [state] = useState<"focus" | "short break" | "long break">("focus");
+  const LONG_BREAK_LENGTH = 900;
+  const SHORT_BREAK_LENGTH = 300;
+  const FOCUS_LENGTH = 1500;
+  const [state, setState] = useState<"focus" | "short break" | "long break">("focus");
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [colorMode] = useState<"light" | "dark">("dark");
-  const [seconds, setSeconds] = useState<number>(1500);
-  const [intervalId, setIntervalId] = useState<number | null>(1500);
+  const [colorMode] = useState<"light" | "dark">("light");
+  const [seconds, setSeconds] = useState<number>(FOCUS_LENGTH);
+  const [intervalId, setIntervalId] = useState<number | null>();
+  const [pomodoros, setPomodoros] = useState<number>(1);
   const onPlay = () => {
     const id = setInterval(() => {
       setSeconds((sec) => sec - 1);
@@ -25,6 +29,39 @@ export default function App() {
     clearInterval(Number(intervalId));
     setIntervalId(null);
   };
+  if (seconds === 0) {
+    clearInterval(Number(intervalId));
+    setIntervalId(null);
+    setIsRunning(false);
+    if (state === "focus" && pomodoros < 4) {
+      setSeconds(SHORT_BREAK_LENGTH);
+      setState("short break");
+    } else if (state === "focus" && pomodoros === 4) {
+      setSeconds(LONG_BREAK_LENGTH);
+      setState("long break");
+      setPomodoros(1)
+    } else {
+      setSeconds(FOCUS_LENGTH);
+      setState("focus");
+      setPomodoros((pomodoros) => pomodoros + 1);
+    }
+  }
+
+  const onNext = () => {
+    if (state === "focus" && pomodoros < 4) {
+      setSeconds(SHORT_BREAK_LENGTH);
+      setState("short break");
+    } else if (state === "focus" && pomodoros === 4) {
+      setSeconds(LONG_BREAK_LENGTH);
+      setState("long break");
+      setPomodoros(0)
+    } else {
+      setSeconds(FOCUS_LENGTH);
+      setState("focus");
+      setPomodoros((pomodoros) => pomodoros + 1);
+    }
+  }
+
 
   return (
     <main
@@ -187,6 +224,7 @@ export default function App() {
               },
             )}
             type="button"
+            onClick={onNext}
           >
             <FastForwardIcon />
           </button>
