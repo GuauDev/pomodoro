@@ -9,6 +9,8 @@ import {
 } from "./assets/icons";
 import clsx from "clsx";
 import Menu from "./components/menu";
+import clickSound from "./assets/sounds/soft.wav";
+import alarmSound from "./assets/sounds/endring.mp3";
 
 export default function App() {
   const LONG_BREAK_LENGTH = 900;
@@ -23,18 +25,25 @@ export default function App() {
   const [intervalId, setIntervalId] = useState<number | null>();
   const [pomodoros, setPomodoros] = useState<number>(1);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  //sounds
+  const click = new Audio(clickSound);
+  const alarm = new Audio(alarmSound);
+
   const onPlay = () => {
+    click.play();
     const id = setInterval(() => {
       setSeconds((sec) => sec - 1);
     }, 1000);
     setIntervalId(id);
   };
   const onPause = () => {
+    click.play();
     clearInterval(Number(intervalId));
     setIntervalId(null);
   };
   if (seconds === 0) {
     clearInterval(Number(intervalId));
+    alarm.play();
     setIntervalId(null);
     setIsRunning(false);
     if (state === "focus" && pomodoros < 4) {
@@ -52,6 +61,8 @@ export default function App() {
   }
 
   const onNext = () => {
+    click.play();
+
     if (state === "focus" && pomodoros < 4) {
       setSeconds(SHORT_BREAK_LENGTH);
       setState("short break");
