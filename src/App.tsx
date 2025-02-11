@@ -8,17 +8,21 @@ import {
   ThreeDotsOutlineIcon,
 } from "./assets/icons";
 import clsx from "clsx";
+import Menu from "./components/menu";
 
 export default function App() {
   const LONG_BREAK_LENGTH = 900;
   const SHORT_BREAK_LENGTH = 300;
   const FOCUS_LENGTH = 1500;
-  const [state, setState] = useState<"focus" | "short break" | "long break">("focus");
+  const [state, setState] = useState<"focus" | "short break" | "long break">(
+    "focus",
+  );
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [colorMode] = useState<"light" | "dark">("light");
   const [seconds, setSeconds] = useState<number>(FOCUS_LENGTH);
   const [intervalId, setIntervalId] = useState<number | null>();
   const [pomodoros, setPomodoros] = useState<number>(1);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const onPlay = () => {
     const id = setInterval(() => {
       setSeconds((sec) => sec - 1);
@@ -39,7 +43,7 @@ export default function App() {
     } else if (state === "focus" && pomodoros === 4) {
       setSeconds(LONG_BREAK_LENGTH);
       setState("long break");
-      setPomodoros(1)
+      setPomodoros(1);
     } else {
       setSeconds(FOCUS_LENGTH);
       setState("focus");
@@ -54,14 +58,13 @@ export default function App() {
     } else if (state === "focus" && pomodoros === 4) {
       setSeconds(LONG_BREAK_LENGTH);
       setState("long break");
-      setPomodoros(0)
+      setPomodoros(0);
     } else {
       setSeconds(FOCUS_LENGTH);
       setState("focus");
       setPomodoros((pomodoros) => pomodoros + 1);
     }
-  }
-
+  };
 
   return (
     <main
@@ -157,6 +160,7 @@ export default function App() {
 
         <div className="flex items-center justify-center gap-[16px]">
           <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={clsx("h-[80px] w-[80px] rounded-[24px] p-[24px]", {
               "bg-red-alpha-100 text-red-900":
                 state === "focus" && colorMode === "light",
@@ -173,11 +177,13 @@ export default function App() {
             })}
             type="button"
           >
+            {isMenuOpen ? <Menu colorMode={colorMode} state={state} /> : null}
+
             <ThreeDotsOutlineIcon />
           </button>
           <button
             className={clsx(
-              "flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
+              "relative flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
               {
                 "bg-red-alpha-600 text-red-900":
                   state === "focus" && colorMode === "light",
