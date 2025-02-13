@@ -171,7 +171,10 @@ export default function App() {
 
         <div className="flex items-center justify-center gap-[16px]">
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => {
+              setIsMenuOpen(!isMenuOpen);
+              click.play();
+            }}
             className={clsx("h-[80px] w-[80px] rounded-[24px] p-[24px]", {
               "bg-red-alpha-100 text-red-900":
                 state === "focus" && colorMode === "light",
