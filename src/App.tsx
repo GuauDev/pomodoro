@@ -87,7 +87,7 @@ export default function App() {
 
   document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
   useEffect(() => {
-    let svg: string;
+    let svg = "";
     if (colorMode === "light" && state === "focus") {
       svg = LightShortFocus;
     } else if (colorMode === "light" && state === "short break") {
