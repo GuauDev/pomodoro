@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BrainIcon,
   CoffeeIcon,
@@ -9,6 +9,14 @@ import {
 } from "./assets/icons";
 import clsx from "clsx";
 import Menu from "./components/menu";
+import {
+  DarkShortFocus,
+  DarkShortLongBreak,
+  DarkShortShortBreak,
+  LightShortFocus,
+  LightShortLongBreak,
+  LightShortShortBreak,
+} from "./assets/logos";
 import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
 
@@ -20,7 +28,7 @@ export default function App() {
     "focus",
   );
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [colorMode] = useState<"light" | "dark">("light");
+  const [colorMode] = useState<"light" | "dark">("dark");
   const [seconds, setSeconds] = useState<number>(FOCUS_LENGTH);
   const [intervalId, setIntervalId] = useState<number | null>();
   const [pomodoros, setPomodoros] = useState<number>(1);
@@ -77,6 +85,29 @@ export default function App() {
     }
   };
 
+  document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+  useEffect(() => {
+    let svg: string;
+    if (colorMode === "light" && state === "focus") {
+      svg = LightShortFocus;
+    } else if (colorMode === "light" && state === "short break") {
+      svg = LightShortShortBreak;
+    } else if (colorMode === "light" && state === "long break") {
+      svg = LightShortLongBreak;
+    } else if (colorMode === "dark" && state === "focus") {
+      svg = DarkShortFocus;
+    } else if (colorMode === "dark" && state === "short break") {
+      svg = DarkShortShortBreak;
+    } else if (colorMode === "dark" && state === "long break") {
+      svg = DarkShortLongBreak;
+    }
+
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+
+    // Cambia el favicon
+    document.querySelector("link[rel='icon']")?.setAttribute("href", url);
+  }, [colorMode, state]);
   return (
     <main
       className={clsx(
