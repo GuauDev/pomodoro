@@ -19,6 +19,7 @@ import {
 } from "./assets/logos";
 import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function App() {
   const LONG_BREAK_LENGTH = 900;
@@ -38,14 +39,12 @@ export default function App() {
   const alarm = new Audio(alarmSound);
 
   const onPlay = () => {
-    click.play();
     const id = setInterval(() => {
       setSeconds((sec) => sec - 1);
     }, 1000);
     setIntervalId(id);
   };
   const onPause = () => {
-    click.play();
     clearInterval(Number(intervalId));
     setIntervalId(null);
   };
@@ -85,6 +84,25 @@ export default function App() {
     }
   };
 
+  const onPausePlay = () => {
+    click.play();
+    setIsRunning(!isRunning);
+    if (!isRunning) {
+      onPlay();
+    } else {
+      onPause();
+    }
+  };
+
+  const onMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    click.play();
+  };
+  const onCloseModals = () => {
+    setIsMenuOpen(false);
+    click.play();
+  };
+
   document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
   useEffect(() => {
     let svg = "";
@@ -108,6 +126,11 @@ export default function App() {
     // Cambia el favicon
     document.querySelector("link[rel='icon']")?.setAttribute("href", url);
   }, [colorMode, state]);
+
+  useHotkeys("right", onNext);
+  useHotkeys("space", onPausePlay);
+  useHotkeys("ctrl+m", onMenu);
+  useHotkeys("esc", onCloseModals);
   return (
     <main
       className={clsx(
@@ -202,10 +225,7 @@ export default function App() {
 
         <div className="flex items-center justify-center gap-[16px]">
           <button
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-              click.play();
-            }}
+            onClick={onMenu}
             className={clsx("h-[80px] w-[80px] rounded-[24px] p-[24px]", {
               "bg-red-alpha-100 text-red-900":
                 state === "focus" && colorMode === "light",
@@ -245,14 +265,7 @@ export default function App() {
               },
             )}
             type="button"
-            onClick={() => {
-              setIsRunning(!isRunning);
-              if (!isRunning) {
-                onPlay();
-              } else {
-                onPause();
-              }
-            }}
+            onClick={onPausePlay}
           >
             {isRunning ? <PauseIcon /> : <PlayIcon />}
           </button>
