@@ -20,6 +20,7 @@ import {
 import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
+import { Shortcuts } from "./components/shortcuts";
 
 export default function App() {
   const LONG_BREAK_LENGTH = 900;
@@ -34,6 +35,7 @@ export default function App() {
   const [intervalId, setIntervalId] = useState<number | null>();
   const [pomodoros, setPomodoros] = useState<number>(1);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isShorcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   //sounds
   const click = new Audio(clickSound);
   const alarm = new Audio(alarmSound);
@@ -100,7 +102,12 @@ export default function App() {
   };
   const onCloseModals = () => {
     setIsMenuOpen(false);
+    setIsShortcutsOpen(false);
     click.play();
+  };
+
+  const openShortcuts = () => {
+    setIsShortcutsOpen(!isShorcutsOpen);
   };
 
   document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
@@ -226,23 +233,32 @@ export default function App() {
         <div className="flex items-center justify-center gap-[16px]">
           <button
             onClick={onMenu}
-            className={clsx("h-[80px] w-[80px] rounded-[24px] p-[24px]", {
-              "bg-red-alpha-100 text-red-900":
-                state === "focus" && colorMode === "light",
-              "bg-green-alpha-100 text-green-900":
-                state === "short break" && colorMode === "light",
-              "bg-blue-alpha-100 text-blue-900":
-                state === "long break" && colorMode === "light",
-              "bg-red-alpha-100 text-red-100":
-                state === "focus" && colorMode === "dark",
-              "bg-green-alpha-100 text-green-100":
-                state === "short break" && colorMode === "dark",
-              "bg-blue-alpha-100 text-blue-100":
-                state === "long break" && colorMode === "dark",
-            })}
+            className={clsx(
+              "relative h-[80px] w-[80px] rounded-[24px] p-[24px]",
+              {
+                "bg-red-alpha-100 text-red-900":
+                  state === "focus" && colorMode === "light",
+                "bg-green-alpha-100 text-green-900":
+                  state === "short break" && colorMode === "light",
+                "bg-blue-alpha-100 text-blue-900":
+                  state === "long break" && colorMode === "light",
+                "bg-red-alpha-100 text-red-100":
+                  state === "focus" && colorMode === "dark",
+                "bg-green-alpha-100 text-green-100":
+                  state === "short break" && colorMode === "dark",
+                "bg-blue-alpha-100 text-blue-100":
+                  state === "long break" && colorMode === "dark",
+              },
+            )}
             type="button"
           >
-            {isMenuOpen ? <Menu colorMode={colorMode} state={state} /> : null}
+            <Menu
+              colorMode={colorMode}
+              state={state}
+              openShortcuts={openShortcuts}
+              isOpen={isMenuOpen}
+              setIsOpen={setIsMenuOpen}
+            />
 
             <ThreeDotsOutlineIcon />
           </button>
@@ -293,6 +309,7 @@ export default function App() {
             <FastForwardIcon />
           </button>
         </div>
+        {isShorcutsOpen ? <Shortcuts /> : null}
       </div>
     </main>
   );

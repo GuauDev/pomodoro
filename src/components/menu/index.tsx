@@ -1,13 +1,38 @@
 import clsx from "clsx";
 import { CharBarIcon, GearSixIcon, KeyIcon } from "../../assets/icons";
+import { useEffect, useRef } from "react";
 
 export default function Menu({
   colorMode,
   state,
+  openShortcuts,
+  isOpen,
+  setIsOpen,
 }: {
   colorMode: "light" | "dark";
   state: "focus" | "short break" | "long break";
+  openShortcuts: () => void;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
   return (
     <div
       className={clsx(
@@ -25,8 +50,10 @@ export default function Menu({
             state === "short break" && colorMode === "dark",
           "border-white-alpha-50 bg-blue-950 text-blue-50":
             state === "long break" && colorMode === "dark",
+          hidden: !isOpen,
         },
       )}
+      ref={modalRef}
     >
       <nav>
         <ul className="flex flex-col">
@@ -42,9 +69,16 @@ export default function Menu({
               icon: KeyIcon,
               text: "Shortcuts",
               shortcut: ["Ctrl", "K"],
+              event: openShortcuts,
             },
-          ].map(({ icon: Icon, text, shortcut }) => (
-            <li className="flex items-center justify-between p-[12px]">
+          ].map(({ icon: Icon, text, shortcut, event }) => (
+            <li
+              className="flex items-center justify-between p-[12px]"
+              onClick={() => {
+                if (event) event();
+              }}
+              key={text}
+            >
               <div className="flex items-center gap-[8px]">
                 <span>
                   <Icon />
