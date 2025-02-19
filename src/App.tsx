@@ -21,6 +21,7 @@ import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Shortcuts } from "./components/shortcuts";
+import PreferencesModal from "./components/Preferences";
 
 export default function App() {
   const LONG_BREAK_LENGTH = 900;
@@ -30,12 +31,13 @@ export default function App() {
     "focus",
   );
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [colorMode] = useState<"light" | "dark">("dark");
+  const [colorMode] = useState<"light" | "dark">("light");
   const [seconds, setSeconds] = useState<number>(FOCUS_LENGTH);
   const [intervalId, setIntervalId] = useState<number | null>();
   const [pomodoros, setPomodoros] = useState<number>(1);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isShorcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false);
   //sounds
   const click = new Audio(clickSound);
   const alarm = new Audio(alarmSound);
@@ -103,11 +105,15 @@ export default function App() {
   const onCloseModals = () => {
     setIsMenuOpen(false);
     setIsShortcutsOpen(false);
+    setIsPreferencesOpen(false);
     click.play();
   };
 
   const openShortcuts = () => {
-    setIsShortcutsOpen(!isShorcutsOpen);
+    setIsShortcutsOpen(!isShortcutsOpen);
+  };
+  const openPreferences = () => {
+    setIsPreferencesOpen(!isPreferencesOpen);
   };
 
   document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
@@ -138,6 +144,8 @@ export default function App() {
   useHotkeys("space", onPausePlay);
   useHotkeys("ctrl+m", onMenu);
   useHotkeys("esc", onCloseModals);
+  useHotkeys("ctrl+k", openShortcuts);
+  useHotkeys("ctrl+g", openPreferences);
   return (
     <main
       className={clsx(
@@ -258,6 +266,7 @@ export default function App() {
               openShortcuts={openShortcuts}
               isOpen={isMenuOpen}
               setIsOpen={setIsMenuOpen}
+              openPreferences={openPreferences}
             />
 
             <ThreeDotsOutlineIcon />
@@ -309,7 +318,10 @@ export default function App() {
             <FastForwardIcon />
           </button>
         </div>
-        {isShorcutsOpen ? <Shortcuts /> : null}
+        {isShortcutsOpen ? <Shortcuts /> : null}
+        {isPreferencesOpen ? (
+          <PreferencesModal colorMode={colorMode} state={state} />
+        ) : null}
       </div>
     </main>
   );

@@ -8,12 +8,14 @@ export default function Menu({
   openShortcuts,
   isOpen,
   setIsOpen,
+  openPreferences,
 }: {
   colorMode: "light" | "dark";
   state: "focus" | "short break" | "long break";
   openShortcuts: () => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  openPreferences: () => void;
 }) {
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -62,8 +64,9 @@ export default function Menu({
 
             {
               icon: GearSixIcon,
-              text: "Settings",
+              text: "Preferences",
               shortcut: ["Ctrl", "G"],
+              event: openPreferences,
             },
             {
               icon: KeyIcon,
