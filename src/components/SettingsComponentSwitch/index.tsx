@@ -29,7 +29,7 @@ export const SettingsComponentSwitch = ({
       <button
         onClick={() => setIsOn(!isOn)}
         className={clsx(
-          `flex h-[20px] w-[34px] items-center rounded-full p-[2px] transition duration-300`,
+          `flex h-[20px] w-[34px] cursor-pointer items-center rounded-full p-[2px] transition duration-300`,
           {
             "bg-white-alpha-200": !isOn && colorMode === "dark",
             "bg-white-alpha-900": isOn && colorMode === "dark",

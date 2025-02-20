@@ -87,7 +87,7 @@ export function SettingsComponentNumber({
               setValue((prev) => String(Math.min(Number(prev) + 1, max)))
             }
             className={clsx(
-              "flex h-[20px] w-[28px] items-center justify-center border-b focus:outline-0",
+              "flex h-[20px] w-[28px] cursor-pointer items-center justify-center border-b focus:outline-0",
               {
                 "border-white-alpha-100": colorMode === "dark",
                 "border-black-alpha-100": colorMode === "light",
@@ -100,7 +100,7 @@ export function SettingsComponentNumber({
             onClick={() =>
               setValue((prev) => String(Math.max(Number(prev) - 1, min)))
             }
-            className="flex h-[20px] w-[29px] items-center justify-center focus:outline-0"
+            className="flex h-[20px] w-[29px] cursor-pointer items-center justify-center focus:outline-0"
           >
             <ArrowDownIcon />
           </button>

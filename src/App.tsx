@@ -112,6 +112,7 @@ export default function App() {
   const openShortcuts = () => {
     setIsShortcutsOpen(!isShortcutsOpen);
   };
+
   const openPreferences = () => {
     setIsPreferencesOpen(!isPreferencesOpen);
   };
@@ -242,7 +243,7 @@ export default function App() {
           <button
             onClick={onMenu}
             className={clsx(
-              "relative h-[80px] w-[80px] rounded-[24px] p-[24px]",
+              "relative h-[80px] w-[80px] cursor-pointer rounded-[24px] p-[24px]",
               {
                 "bg-red-alpha-100 text-red-900":
                   state === "focus" && colorMode === "light",
@@ -273,7 +274,7 @@ export default function App() {
           </button>
           <button
             className={clsx(
-              "relative flex h-[96px] w-[128px] items-center justify-center rounded-[32px] px-[48] py-[32]",
+              "relative flex h-[96px] w-[128px] cursor-pointer items-center justify-center rounded-[32px] px-[48] py-[32]",
               {
                 "bg-red-alpha-600 text-red-900":
                   state === "focus" && colorMode === "light",
@@ -296,7 +297,7 @@ export default function App() {
           </button>
           <button
             className={clsx(
-              "flex h-[80px] w-[80px] items-center justify-center rounded-[24px] p-[24px]",
+              "flex h-[80px] w-[80px] cursor-pointer items-center justify-center rounded-[24px] p-[24px]",
               {
                 "bg-red-alpha-100 text-red-900":
                   state === "focus" && colorMode === "light",
