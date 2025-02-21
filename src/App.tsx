@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   BrainIcon,
   CoffeeIcon,
@@ -22,32 +22,43 @@ import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Shortcuts } from "./components/shortcuts";
 import PreferencesModal from "./components/Preferences";
+import { useRunningStore } from "./lib/store";
 
 export default function App() {
+  const {
+    setSeconds,
+    setIntervalId,
+    intervalId,
+    seconds,
+    setIsShortcutsOpen,
+    colorMode,
+    isMenuOpen,
+    isPreferencesOpen,
+    isRunning,
+    isShortcutsOpen,
+    setIsMenuOpen,
+    setIsRunning,
+    setState,
+    state,
+    pomodoros,
+    setIsPreferencesOpen,
+    setPomodoros,
+    substractSeconds,
+  } = useRunningStore();
   const LONG_BREAK_LENGTH = 900;
   const SHORT_BREAK_LENGTH = 300;
   const FOCUS_LENGTH = 1500;
-  const [state, setState] = useState<"focus" | "short break" | "long break">(
-    "focus",
-  );
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [colorMode] = useState<"light" | "dark">("light");
-  const [seconds, setSeconds] = useState<number>(FOCUS_LENGTH);
-  const [intervalId, setIntervalId] = useState<number | null>();
-  const [pomodoros, setPomodoros] = useState<number>(1);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false);
   //sounds
   const click = new Audio(clickSound);
   const alarm = new Audio(alarmSound);
 
   const onPlay = () => {
     const id = setInterval(() => {
-      setSeconds((sec) => sec - 1);
+      substractSeconds();
     }, 1000);
     setIntervalId(id);
   };
+
   const onPause = () => {
     clearInterval(Number(intervalId));
     setIntervalId(null);
@@ -67,7 +78,7 @@ export default function App() {
     } else {
       setSeconds(FOCUS_LENGTH);
       setState("focus");
-      setPomodoros((pomodoros) => pomodoros + 1);
+      setPomodoros(pomodoros + 1);
     }
   }
 
@@ -84,7 +95,7 @@ export default function App() {
     } else {
       setSeconds(FOCUS_LENGTH);
       setState("focus");
-      setPomodoros((pomodoros) => pomodoros + 1);
+      setPomodoros(pomodoros + 1);
     }
   };
 
@@ -145,8 +156,14 @@ export default function App() {
   useHotkeys("space", onPausePlay);
   useHotkeys("ctrl+m", onMenu);
   useHotkeys("esc", onCloseModals);
-  useHotkeys("ctrl+k", openShortcuts);
-  useHotkeys("ctrl+g", openPreferences);
+  useHotkeys("ctrl+k", (event) => {
+    event.preventDefault();
+    openShortcuts();
+  });
+  useHotkeys("ctrl+g", (event) => {
+    event.preventDefault();
+    openPreferences();
+  });
   return (
     <main
       className={clsx(
