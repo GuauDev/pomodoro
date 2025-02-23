@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { XIcon } from "../../assets/icons";
 import { SettingsComponentSwitch } from "../SettingsComponentSwitch";
 import { SettingsComponentNumber } from "../SettingsComponentNumber";
+import { useSettingsStore } from "../../lib/store";
 
 export default function PreferencesModal({
   colorMode,
@@ -10,6 +11,25 @@ export default function PreferencesModal({
   colorMode: "light" | "dark";
   state: "focus" | "short break" | "long break";
 }) {
+  const {
+    darkMode,
+    setDarkMode,
+    focusLength,
+    setFocusLength,
+    pomodorosUntilLongBreak,
+    setPomodorosUntilLongBreak,
+    shortBreakLength,
+    setShortBreakLength,
+    longBreakLength,
+    setLongBreakLength,
+    autoResumeTimer,
+    setAutoResumeTimer,
+    sound,
+    setSound,
+    notifications,
+    setNotifications,
+  } = useSettingsStore();
+
   return (
     <div
       className={clsx(
@@ -55,44 +75,40 @@ export default function PreferencesModal({
       </div>
       <SettingsComponentSwitch
         title="Dark mode"
-        colorMode={colorMode}
-        state={state}
+        setIsOn={setDarkMode}
+        isOn={darkMode}
       />
       <SettingsComponentNumber
         title="Focus length"
-        colorMode={colorMode}
-        state={state}
+        setValue={setFocusLength}
+        value={focusLength}
       />
       <SettingsComponentNumber
         title="Pomodoros until long break"
-        colorMode={colorMode}
-        state={state}
+        value={pomodorosUntilLongBreak}
+        setValue={setPomodorosUntilLongBreak}
       />
       <SettingsComponentNumber
         title="Short break length"
-        colorMode={colorMode}
-        state={state}
+        setValue={setShortBreakLength}
+        value={shortBreakLength}
       />
       <SettingsComponentNumber
         title="Long break length"
-        colorMode={colorMode}
-        state={state}
+        setValue={setLongBreakLength}
+        value={longBreakLength}
       />
       <SettingsComponentSwitch
         title="Auto resume timer"
-        colorMode={colorMode}
-        state={state}
+        isOn={autoResumeTimer}
+        setIsOn={setAutoResumeTimer}
       />
-      <SettingsComponentSwitch
-        title="Sound"
-        colorMode={colorMode}
-        state={state}
-      />
+      <SettingsComponentSwitch title="Sound" isOn={sound} setIsOn={setSound} />
 
       <SettingsComponentSwitch
         title="Notifications"
-        colorMode={colorMode}
-        state={state}
+        isOn={notifications}
+        setIsOn={setNotifications}
       />
     </div>
   );

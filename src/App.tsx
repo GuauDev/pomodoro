@@ -43,7 +43,7 @@ export default function App() {
     pomodoros,
     setIsPreferencesOpen,
     setPomodoros,
-    substractSeconds,
+    subtractSeconds,
   } = useRunningStore();
   const LONG_BREAK_LENGTH = 900;
   const SHORT_BREAK_LENGTH = 300;
@@ -54,7 +54,7 @@ export default function App() {
 
   const onPlay = () => {
     const id = setInterval(() => {
-      substractSeconds();
+      subtractSeconds();
     }, 1000);
     setIntervalId(id);
   };

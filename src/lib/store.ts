@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface SettingsState {
     darkMode: boolean;
@@ -66,7 +66,7 @@ interface RunningState {
   setIsPreferencesOpen: (isPreferencesOpen: boolean) => void;
   pomodoros:number;
   setPomodoros:(pomodoros:number)=>void;
-  substractSeconds:()=>void;
+  subtractSeconds:()=>void;
 }
 
 export const useRunningStore = create(
@@ -90,23 +90,33 @@ export const useRunningStore = create(
       setIsPreferencesOpen: (isPreferencesOpen: boolean) => set({ isPreferencesOpen }),
       pomodoros: 1,
       setPomodoros: (pomodoros: number) => set({ pomodoros }),
-      substractSeconds: () => set((state) => {
-        const expirationTime = Date.now() + 1 * 60 * 1000;
-        localStorage.setItem("timer-expiration", expirationTime.toString());
-        return { ...state, seconds: state.seconds - 1 };
-      }),
+      subtractSeconds: () => set((state) => ({ seconds: state.seconds - 1 })
+      ),
     }),
     {
       name: "running-storage",
-      onRehydrateStorage: () => () => {
-        const expiration = localStorage.getItem("timer-expiration");
-
-        if (expiration && Date.now() > Number(expiration)) {
-          localStorage.removeItem("timer-expiration");
-          localStorage.removeItem("running-storage");
-          window.location.reload();
-        }
-      },
+      storage:createJSONStorage(()=>{return sessionStorage}),
+      partialize: (state) => ({
+        isRunning: false,
+        colorMode: state.colorMode,
+        state: state.state,
+        pomodoros: state.pomodoros,
+        setIsRunning: state.setIsRunning,
+        setColorMode: state.setColorMode,
+        setState: state.setState,
+        setIntervalId: state.setIntervalId,
+        setSeconds: state.setSeconds,
+        setIsMenuOpen: state.setIsMenuOpen,
+        setIsShortcutsOpen: state.setIsShortcutsOpen,
+        setIsPreferencesOpen: state.setIsPreferencesOpen,
+        setPomodoros: state.setPomodoros,
+        subtractSeconds: state.subtractSeconds,
+        intervalId: null,
+        seconds: state.seconds,
+        isMenuOpen:false,
+        isShortcutsOpen:false,
+        isPreferencesOpen: false,
+      }),
       
     }
   )

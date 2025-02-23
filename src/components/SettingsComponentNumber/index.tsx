@@ -1,24 +1,24 @@
-import { useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "../../assets/icons";
 import clsx from "clsx";
+import { useRunningStore } from "../../lib/store";
 
 export function SettingsComponentNumber({
   title,
-  colorMode,
-  state,
+  value,
+  setValue,
 }: {
   title: string;
-  colorMode: "light" | "dark";
-  state: "focus" | "short break" | "long break";
+  value: number;
+  setValue: (value: number) => void;
 }) {
-  const [value, setValue] = useState("25");
+  const { colorMode, state } = useRunningStore();
   const min = 0;
   const max = 100;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = e.target.value.replace(/[^0-9]/g, "");
     if (newValue === "") newValue = "0";
-    setValue(Math.min(Math.max(Number(newValue), min), max).toString());
+    setValue(Math.min(Math.max(Number(newValue), min), max));
   };
 
   return (
@@ -46,7 +46,7 @@ export function SettingsComponentNumber({
       >
         <input
           type="text"
-          value={value}
+          value={String(value)}
           onChange={handleChange}
           className={clsx(
             "text-text-regular font-text-regular h-[40px] w-[65px] text-center outline-none",
@@ -83,9 +83,7 @@ export function SettingsComponentNumber({
           })}
         >
           <button
-            onClick={() =>
-              setValue((prev) => String(Math.min(Number(prev) + 1, max)))
-            }
+            onClick={() => setValue(Math.min(Number(value) + 1, max))}
             className={clsx(
               "flex h-[20px] w-[28px] cursor-pointer items-center justify-center border-b focus:outline-0",
               {
@@ -97,9 +95,7 @@ export function SettingsComponentNumber({
             <ArrowUpIcon />
           </button>
           <button
-            onClick={() =>
-              setValue((prev) => String(Math.max(Number(prev) - 1, min)))
-            }
+            onClick={() => setValue(Math.max(Number(value) - 1, min))}
             className="flex h-[20px] w-[29px] cursor-pointer items-center justify-center focus:outline-0"
           >
             <ArrowDownIcon />

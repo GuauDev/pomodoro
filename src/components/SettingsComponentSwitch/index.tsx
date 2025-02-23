@@ -1,16 +1,16 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useRunningStore } from "../../lib/store";
 
 export const SettingsComponentSwitch = ({
   title,
-  state,
-  colorMode,
+  isOn,
+  setIsOn,
 }: {
   title: string;
-  colorMode: "light" | "dark";
-  state: "focus" | "short break" | "long break";
+  isOn: boolean;
+  setIsOn: (value: boolean) => void;
 }) => {
-  const [isOn, setIsOn] = useState(false);
+  const { colorMode, state } = useRunningStore();
   return (
     <div className="flex items-center justify-between py-[20px]">
       <p
