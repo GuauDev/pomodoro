@@ -22,7 +22,7 @@ import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Shortcuts } from "./components/shortcuts";
 import PreferencesModal from "./components/Preferences";
-import { useRunningStore } from "./lib/store";
+import { useRunningStore, useSettingsStore } from "./lib/store";
 
 export default function App() {
   const {
@@ -31,7 +31,6 @@ export default function App() {
     intervalId,
     seconds,
     setIsShortcutsOpen,
-    colorMode,
     isMenuOpen,
     isPreferencesOpen,
     isRunning,
@@ -45,6 +44,7 @@ export default function App() {
     setPomodoros,
     subtractSeconds,
   } = useRunningStore();
+  const { darkMode } = useSettingsStore();
   const LONG_BREAK_LENGTH = 900;
   const SHORT_BREAK_LENGTH = 300;
   const FOCUS_LENGTH = 1500;
@@ -131,17 +131,17 @@ export default function App() {
   document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
   useEffect(() => {
     let svg = "";
-    if (colorMode === "light" && state === "focus") {
+    if (darkMode === false && state === "focus") {
       svg = LightShortFocus;
-    } else if (colorMode === "light" && state === "short break") {
+    } else if (darkMode === false && state === "short break") {
       svg = LightShortShortBreak;
-    } else if (colorMode === "light" && state === "long break") {
+    } else if (darkMode === false && state === "long break") {
       svg = LightShortLongBreak;
-    } else if (colorMode === "dark" && state === "focus") {
+    } else if (darkMode === true && state === "focus") {
       svg = DarkShortFocus;
-    } else if (colorMode === "dark" && state === "short break") {
+    } else if (darkMode === true && state === "short break") {
       svg = DarkShortShortBreak;
-    } else if (colorMode === "dark" && state === "long break") {
+    } else if (darkMode === true && state === "long break") {
       svg = DarkShortLongBreak;
     }
 
@@ -150,7 +150,7 @@ export default function App() {
 
     // Cambia el favicon
     document.querySelector("link[rel='icon']")?.setAttribute("href", url);
-  }, [colorMode, state]);
+  }, [darkMode, state]);
 
   useHotkeys("right", onNext);
   useHotkeys("space", onPausePlay);
@@ -170,17 +170,17 @@ export default function App() {
         "font-roboto-flex text-optical flex h-screen max-h-screen max-w-screen items-center justify-center",
         {
           "bg-red-50 selection:bg-red-900/20":
-            colorMode === "light" && state === "focus",
+            darkMode === false && state === "focus",
           "bg-green-50 selection:bg-green-900/20":
-            colorMode === "light" && state === "short break",
+            darkMode === false && state === "short break",
           "bg-blue-50 selection:bg-blue-900/20":
-            colorMode === "light" && state === "long break",
+            darkMode === false && state === "long break",
           "bg-red-950 selection:bg-red-900/20":
-            colorMode === "dark" && state === "focus",
+            darkMode === true && state === "focus",
           "bg-green-950 selection:bg-green-900/20":
-            colorMode === "dark" && state === "short break",
+            darkMode === true && state === "short break",
           "bg-blue-950 selection:bg-blue-900/20":
-            colorMode === "dark" && state === "long break",
+            darkMode === true && state === "long break",
         },
       )}
     >
@@ -190,17 +190,17 @@ export default function App() {
             "flex items-center justify-center gap-[8px] rounded-[9999px] border-2 px-[14px] py-[6px]",
             {
               "bg-red-alpha-100 border-red-900 text-red-900":
-                state === "focus" && colorMode === "light",
+                state === "focus" && darkMode === false,
               "bg-green-alpha-100 border-green-900 text-green-900":
-                state === "short break" && colorMode === "light",
+                state === "short break" && darkMode === false,
               "bg-blue-alpha-100 border-blue-900 text-blue-900":
-                state === "long break" && colorMode === "light",
+                state === "long break" && darkMode === false,
               "bg-red-alpha-100 border-red-50 text-red-50":
-                state === "focus" && colorMode === "dark",
+                state === "focus" && darkMode === true,
               "bg-green-alpha-100 border-green-50 text-green-50":
-                state === "short break" && colorMode === "dark",
+                state === "short break" && darkMode === true,
               "bg-blue-alpha-100 border-blue-50 text-blue-50":
-                state === "long break" && colorMode === "dark",
+                state === "long break" && darkMode === true,
             },
           )}
         >
@@ -223,13 +223,12 @@ export default function App() {
               "font-timer-running": isRunning,
             },
             {
-              "text-red-900": state === "focus" && colorMode === "light",
-              "text-green-900":
-                state === "short break" && colorMode === "light",
-              "text-blue-900": state === "long break" && colorMode === "light",
-              "text-red-50": state === "focus" && colorMode === "dark",
-              "text-green-50": state === "short break" && colorMode === "dark",
-              "text-blue-50": state === "long break" && colorMode === "dark",
+              "text-red-900": state === "focus" && darkMode === false,
+              "text-green-900": state === "short break" && darkMode === false,
+              "text-blue-900": state === "long break" && darkMode === false,
+              "text-red-50": state === "focus" && darkMode === true,
+              "text-green-50": state === "short break" && darkMode === true,
+              "text-blue-50": state === "long break" && darkMode === true,
             },
           )}
         >
@@ -243,13 +242,12 @@ export default function App() {
               "font-timer-running": isRunning,
             },
             {
-              "text-red-900": state === "focus" && colorMode === "light",
-              "text-green-900":
-                state === "short break" && colorMode === "light",
-              "text-blue-900": state === "long break" && colorMode === "light",
-              "text-red-50": state === "focus" && colorMode === "dark",
-              "text-green-50": state === "short break" && colorMode === "dark",
-              "text-blue-50": state === "long break" && colorMode === "dark",
+              "text-red-900": state === "focus" && darkMode === false,
+              "text-green-900": state === "short break" && darkMode === false,
+              "text-blue-900": state === "long break" && darkMode === false,
+              "text-red-50": state === "focus" && darkMode === true,
+              "text-green-50": state === "short break" && darkMode === true,
+              "text-blue-50": state === "long break" && darkMode === true,
             },
           )}
         >
@@ -263,23 +261,22 @@ export default function App() {
               "relative h-[80px] w-[80px] cursor-pointer rounded-[24px] p-[24px]",
               {
                 "bg-red-alpha-100 text-red-900":
-                  state === "focus" && colorMode === "light",
+                  state === "focus" && darkMode === false,
                 "bg-green-alpha-100 text-green-900":
-                  state === "short break" && colorMode === "light",
+                  state === "short break" && darkMode === false,
                 "bg-blue-alpha-100 text-blue-900":
-                  state === "long break" && colorMode === "light",
+                  state === "long break" && darkMode === false,
                 "bg-red-alpha-100 text-red-100":
-                  state === "focus" && colorMode === "dark",
+                  state === "focus" && darkMode === true,
                 "bg-green-alpha-100 text-green-100":
-                  state === "short break" && colorMode === "dark",
+                  state === "short break" && darkMode === true,
                 "bg-blue-alpha-100 text-blue-100":
-                  state === "long break" && colorMode === "dark",
+                  state === "long break" && darkMode === true,
               },
             )}
             type="button"
           >
             <Menu
-              colorMode={colorMode}
               state={state}
               openShortcuts={openShortcuts}
               isOpen={isMenuOpen}
@@ -294,17 +291,17 @@ export default function App() {
               "relative flex h-[96px] w-[128px] cursor-pointer items-center justify-center rounded-[32px] px-[48] py-[32]",
               {
                 "bg-red-alpha-600 text-red-900":
-                  state === "focus" && colorMode === "light",
+                  state === "focus" && darkMode === false,
                 "bg-green-alpha-600 text-green-900":
-                  state === "short break" && colorMode === "light",
+                  state === "short break" && darkMode === false,
                 "bg-blue-alpha-700 text-blue-900":
-                  state === "long break" && colorMode === "light",
+                  state === "long break" && darkMode === false,
                 "bg-red-alpha-700 text-red-50":
-                  state === "focus" && colorMode === "dark",
+                  state === "focus" && darkMode === true,
                 "bg-green-alpha-700 text-green-50":
-                  state === "short break" && colorMode === "dark",
+                  state === "short break" && darkMode === true,
                 "bg-blue-alpha-700 text-blue-50":
-                  state === "long break" && colorMode === "dark",
+                  state === "long break" && darkMode === true,
               },
             )}
             type="button"
@@ -317,17 +314,17 @@ export default function App() {
               "flex h-[80px] w-[80px] cursor-pointer items-center justify-center rounded-[24px] p-[24px]",
               {
                 "bg-red-alpha-100 text-red-900":
-                  state === "focus" && colorMode === "light",
+                  state === "focus" && darkMode === false,
                 "bg-green-alpha-100 text-green-900":
-                  state === "short break" && colorMode === "light",
+                  state === "short break" && darkMode === false,
                 "bg-blue-alpha-100 text-blue-900":
-                  state === "long break" && colorMode === "light",
+                  state === "long break" && darkMode === false,
                 "bg-red-alpha-100 text-red-100":
-                  state === "focus" && colorMode === "dark",
+                  state === "focus" && darkMode === true,
                 "bg-green-alpha-100 text-green-100":
-                  state === "short break" && colorMode === "dark",
+                  state === "short break" && darkMode === true,
                 "bg-blue-alpha-100 text-blue-100":
-                  state === "long break" && colorMode === "dark",
+                  state === "long break" && darkMode === true,
               },
             )}
             type="button"
@@ -338,7 +335,7 @@ export default function App() {
         </div>
         {isShortcutsOpen ? <Shortcuts /> : null}
         {isPreferencesOpen ? (
-          <PreferencesModal colorMode={colorMode} state={state} />
+          <PreferencesModal colorMode={"dark"} state={state} />
         ) : null}
       </div>
     </main>

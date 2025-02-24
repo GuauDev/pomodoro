@@ -50,8 +50,6 @@ export const useSettingsStore = create(
 interface RunningState {
   isRunning:boolean;
   setIsRunning: (isRunning: boolean) => void;
-  colorMode: 'light' | 'dark';
-  setColorMode:(colorMode: 'light' | 'dark')=>void;
   state: "focus" | "short break" | "long break";
   setState: (state: "focus" | "short break" | "long break") => void;
   intervalId:number | null;
@@ -74,8 +72,6 @@ export const useRunningStore = create(
     (set) => ({
       isRunning: false,
       setIsRunning: (isRunning: boolean) => set({ isRunning }),
-      colorMode: 'light',
-      setColorMode: (colorMode: 'light' | 'dark') => set({ colorMode }),
       state: "focus",
       setState: (state: "focus" | "short break" | "long break") => set({ state }),
       intervalId: null,
@@ -98,11 +94,9 @@ export const useRunningStore = create(
       storage:createJSONStorage(()=>{return sessionStorage}),
       partialize: (state) => ({
         isRunning: false,
-        colorMode: state.colorMode,
         state: state.state,
         pomodoros: state.pomodoros,
         setIsRunning: state.setIsRunning,
-        setColorMode: state.setColorMode,
         setState: state.setState,
         setIntervalId: state.setIntervalId,
         setSeconds: state.setSeconds,

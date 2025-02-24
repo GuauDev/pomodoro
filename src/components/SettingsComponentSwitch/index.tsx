@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useRunningStore } from "../../lib/store";
+import { useRunningStore, useSettingsStore } from "../../lib/store";
 
 export const SettingsComponentSwitch = ({
   title,
@@ -10,17 +10,18 @@ export const SettingsComponentSwitch = ({
   isOn: boolean;
   setIsOn: (value: boolean) => void;
 }) => {
-  const { colorMode, state } = useRunningStore();
+  const { state } = useRunningStore();
+  const { darkMode } = useSettingsStore();
   return (
     <div className="flex items-center justify-between py-[20px]">
       <p
         className={clsx("text-text-regular font-text-regular", {
-          "text-red-900": colorMode === "light" && state === "focus",
-          "text-green-900": colorMode === "light" && state === "short break",
-          "text-blue-900": colorMode === "light" && state === "long break",
-          "text-red-50": colorMode === "dark" && state === "focus",
-          "text-green-50": colorMode === "dark" && state === "short break",
-          "text-blue-50": colorMode === "dark" && state === "long break",
+          "text-red-900": darkMode === false && state === "focus",
+          "text-green-900": darkMode === false && state === "short break",
+          "text-blue-900": darkMode === false && state === "long break",
+          "text-red-50": darkMode === true && state === "focus",
+          "text-green-50": darkMode === true && state === "short break",
+          "text-blue-50": darkMode === true && state === "long break",
         })}
       >
         {title}
@@ -31,10 +32,10 @@ export const SettingsComponentSwitch = ({
         className={clsx(
           `flex h-[20px] w-[34px] cursor-pointer items-center rounded-full p-[2px] transition duration-300`,
           {
-            "bg-white-alpha-200": !isOn && colorMode === "dark",
-            "bg-white-alpha-900": isOn && colorMode === "dark",
-            "bg-black-alpha-200": !isOn && colorMode === "light",
-            "bg-black-alpha-900": isOn && colorMode === "light",
+            "bg-white-alpha-200": !isOn && darkMode === true,
+            "bg-white-alpha-900": isOn && darkMode === true,
+            "bg-black-alpha-200": !isOn && darkMode === false,
+            "bg-black-alpha-900": isOn && darkMode === false,
           },
         )}
       >
@@ -45,12 +46,12 @@ export const SettingsComponentSwitch = ({
               "translate-x-[14px]": isOn,
             },
             {
-              "bg-red-950": state === "focus" && colorMode === "dark",
-              "bg-green-950": state === "short break" && colorMode === "dark",
-              "bg-blue-950": state === "long break" && colorMode === "dark",
-              "bg-red-50": state === "focus" && colorMode === "light",
-              "bg-green-50": state === "short break" && colorMode === "light",
-              "bg-blue-50": state === "long break" && colorMode === "light",
+              "bg-red-950": state === "focus" && darkMode === true,
+              "bg-green-950": state === "short break" && darkMode === true,
+              "bg-blue-950": state === "long break" && darkMode === true,
+              "bg-red-50": state === "focus" && darkMode === false,
+              "bg-green-50": state === "short break" && darkMode === false,
+              "bg-blue-50": state === "long break" && darkMode === false,
             },
           )}
         />
