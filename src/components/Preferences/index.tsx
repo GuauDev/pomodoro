@@ -2,7 +2,8 @@ import clsx from "clsx";
 import { XIcon } from "../../assets/icons";
 import { SettingsComponentSwitch } from "../SettingsComponentSwitch";
 import { SettingsComponentNumber } from "../SettingsComponentNumber";
-import { useSettingsStore } from "../../lib/store";
+import { useRunningStore, useSettingsStore } from "../../lib/store";
+import clickSound from "../../assets/sounds/soft.wav";
 
 export default function PreferencesModal({
   state,
@@ -28,6 +29,13 @@ export default function PreferencesModal({
     notifications,
     setNotifications,
   } = useSettingsStore();
+  const { setIsPreferencesOpen } = useRunningStore();
+  const click = new Audio(clickSound);
+  const clickPlay = () => {
+    if (sound) {
+      click.play();
+    }
+  };
 
   return (
     <div
@@ -56,7 +64,13 @@ export default function PreferencesModal({
         >
           Settings
         </h2>
-        <button>
+        <button
+          onClick={() => {
+            setIsPreferencesOpen(false);
+            clickPlay();
+          }}
+          className="cursor-pointer"
+        >
           <span
             className={clsx("block h-[18px] w-[18px]", {
               "text-red-900": darkMode === false && state === "focus",

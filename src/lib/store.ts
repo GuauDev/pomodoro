@@ -76,7 +76,7 @@ export const useRunningStore = create(
       setState: (state: "focus" | "short break" | "long break") => set({ state }),
       intervalId: null,
       setIntervalId: (intervalId: number | null) => set({ intervalId }),
-      seconds: 1500,
+      seconds: 0,
       setSeconds: (seconds: number) => set({ seconds }),
       isMenuOpen: false,
       setIsMenuOpen: (isMenuOpen: boolean) => set({ isMenuOpen }),
@@ -86,7 +86,7 @@ export const useRunningStore = create(
       setIsPreferencesOpen: (isPreferencesOpen: boolean) => set({ isPreferencesOpen }),
       pomodoros: 1,
       setPomodoros: (pomodoros: number) => set({ pomodoros }),
-      subtractSeconds: () => set((state) => ({ seconds: state.seconds - 1 })
+      subtractSeconds: () => set((state) => ({ seconds: state.seconds + 1 })
       ),
     }),
     {

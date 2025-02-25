@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useRunningStore, useSettingsStore } from "../../lib/store";
+import clickSound from "../../assets/sounds/soft.wav";
 
 export const SettingsComponentSwitch = ({
   title,
@@ -11,7 +12,13 @@ export const SettingsComponentSwitch = ({
   setIsOn: (value: boolean) => void;
 }) => {
   const { state } = useRunningStore();
-  const { darkMode } = useSettingsStore();
+  const { darkMode, sound } = useSettingsStore();
+  const click = new Audio(clickSound);
+  const clickPlay = () => {
+    if (sound) {
+      click.play();
+    }
+  };
   return (
     <div className="flex items-center justify-between py-[20px]">
       <p
@@ -28,7 +35,10 @@ export const SettingsComponentSwitch = ({
       </p>
 
       <button
-        onClick={() => setIsOn(!isOn)}
+        onClick={() => {
+          setIsOn(!isOn);
+          clickPlay();
+        }}
         className={clsx(
           `flex h-[20px] w-[34px] cursor-pointer items-center rounded-full p-[2px] transition duration-300`,
           {

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   BrainIcon,
   CoffeeIcon,
@@ -44,64 +44,118 @@ export default function App() {
     setPomodoros,
     subtractSeconds,
   } = useRunningStore();
-  const { darkMode } = useSettingsStore();
-  const LONG_BREAK_LENGTH = 900;
-  const SHORT_BREAK_LENGTH = 300;
-  const FOCUS_LENGTH = 1500;
+  const {
+    darkMode,
+    focusLength,
+    shortBreakLength,
+    longBreakLength,
+    pomodorosUntilLongBreak,
+    autoResumeTimer,
+    sound,
+  } = useSettingsStore();
   //sounds
   const click = new Audio(clickSound);
   const alarm = new Audio(alarmSound);
+  const clickPlay = () => {
+    if (sound) {
+      click.play();
+    }
+  };
+
+  const alarmPlay = () => {
+    if (sound) {
+      alarm.play();
+    }
+  };
+
+  const [minutesLeft, setMinutesLeft] = useState(0);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+
+  useEffect(() => {
+    if (state === "focus") {
+      setMinutesLeft(Math.floor((focusLength * 60 - seconds) / 60));
+      setSecondsLeft((focusLength * 60 - seconds) % 60);
+    } else if (state === "short break") {
+      setMinutesLeft(Math.floor((shortBreakLength * 60 - seconds) / 60));
+      setSecondsLeft((shortBreakLength * 60 - seconds) % 60);
+    } else if (state === "long break") {
+      setMinutesLeft(Math.floor((longBreakLength * 60 - seconds) / 60));
+      setSecondsLeft((longBreakLength * 60 - seconds) % 60);
+    }
+
+    if (seconds >= focusLength * 60 && state === "focus") {
+      alarmPlay();
+      if (pomodoros >= pomodorosUntilLongBreak) {
+        setState("long break");
+        setPomodoros(0);
+      } else {
+        setState("short break");
+      }
+      setSeconds(0);
+      if (autoResumeTimer) {
+        onPlay();
+      } else {
+        onPause();
+      }
+    } else if (seconds >= shortBreakLength * 60 && state === "short break") {
+      alarmPlay();
+      setState("focus");
+      setPomodoros(pomodoros + 1);
+      if (autoResumeTimer) {
+        onPlay();
+      } else {
+        onPause();
+      }
+
+      setSeconds(0);
+    } else if (seconds >= longBreakLength * 60 && state === "long break") {
+      alarmPlay();
+      setState("focus");
+      setPomodoros(pomodoros + 1);
+      setSeconds(0);
+      if (autoResumeTimer) {
+        onPlay();
+      } else {
+        onPause();
+      }
+    }
+  }, [seconds, longBreakLength, shortBreakLength, focusLength, state]);
+  const onNext = () => {
+    clickPlay();
+    if (state === "focus") {
+      if (pomodoros >= pomodorosUntilLongBreak) {
+        setState("long break");
+        setPomodoros(0);
+      } else {
+        setState("short break");
+      }
+    } else if (state === "short break") {
+      setState("focus");
+      setPomodoros(pomodoros + 1);
+    } else if (state === "long break") {
+      setState("focus");
+      setPomodoros(pomodoros + 1);
+    }
+    setSeconds(0);
+  };
 
   const onPlay = () => {
+    clearInterval(Number(intervalId));
+    setIntervalId(null);
     const id = setInterval(() => {
       subtractSeconds();
     }, 1000);
     setIntervalId(id);
+    setIsRunning(true);
   };
-
   const onPause = () => {
     clearInterval(Number(intervalId));
     setIntervalId(null);
-  };
-  if (seconds === 0) {
-    clearInterval(Number(intervalId));
-    alarm.play();
-    setIntervalId(null);
     setIsRunning(false);
-    if (state === "focus" && pomodoros < 4) {
-      setSeconds(SHORT_BREAK_LENGTH);
-      setState("short break");
-    } else if (state === "focus" && pomodoros === 4) {
-      setSeconds(LONG_BREAK_LENGTH);
-      setState("long break");
-      setPomodoros(1);
-    } else {
-      setSeconds(FOCUS_LENGTH);
-      setState("focus");
-      setPomodoros(pomodoros + 1);
-    }
-  }
-
-  const onNext = () => {
-    click.play();
-
-    if (state === "focus" && pomodoros < 4) {
-      setSeconds(SHORT_BREAK_LENGTH);
-      setState("short break");
-    } else if (state === "focus" && pomodoros === 4) {
-      setSeconds(LONG_BREAK_LENGTH);
-      setState("long break");
-      setPomodoros(0);
-    } else {
-      setSeconds(FOCUS_LENGTH);
-      setState("focus");
-      setPomodoros(pomodoros + 1);
-    }
   };
 
   const onPausePlay = () => {
-    click.play();
-    setIsRunning(!isRunning);
+    clickPlay();
     if (!isRunning) {
       onPlay();
     } else {
@@ -111,24 +165,26 @@ export default function App() {
 
   const onMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    click.play();
+    clickPlay();
   };
   const onCloseModals = () => {
     setIsMenuOpen(false);
     setIsShortcutsOpen(false);
     setIsPreferencesOpen(false);
-    click.play();
+    clickPlay();
   };
 
   const openShortcuts = () => {
     setIsShortcutsOpen(!isShortcutsOpen);
+    clickPlay();
   };
 
   const openPreferences = () => {
     setIsPreferencesOpen(!isPreferencesOpen);
+    clickPlay();
   };
 
-  document.title = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+  document.title = `${String(minutesLeft).padStart(2, "0")}:${String(secondsLeft).padStart(2, "0")}`;
   useEffect(() => {
     let svg = "";
     if (darkMode === false && state === "focus") {
@@ -232,7 +288,7 @@ export default function App() {
             },
           )}
         >
-          {String(Math.floor(seconds / 60)).padStart(2, "0")}
+          {String(minutesLeft).padStart(2, "0")}
         </h1>
         <h1
           className={clsx(
@@ -251,7 +307,7 @@ export default function App() {
             },
           )}
         >
-          {String(Math.floor(seconds % 60)).padStart(2, "0")}
+          {String(secondsLeft).padStart(2, "0")}
         </h1>
 
         <div className="flex items-center justify-center gap-[16px]">

@@ -1,6 +1,7 @@
 import { ArrowDownIcon, ArrowUpIcon } from "../../assets/icons";
 import clsx from "clsx";
 import { useRunningStore, useSettingsStore } from "../../lib/store";
+import clickSound from "../../assets/sounds/soft.wav";
 
 export function SettingsComponentNumber({
   title,
@@ -12,10 +13,15 @@ export function SettingsComponentNumber({
   setValue: (value: number) => void;
 }) {
   const { state } = useRunningStore();
-  const { darkMode } = useSettingsStore();
-  const min = 0;
+  const { darkMode, sound } = useSettingsStore();
+  const min = 1;
   const max = 100;
-
+  const click = new Audio(clickSound);
+  const clickPlay = () => {
+    if (sound) {
+      click.play();
+    }
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = e.target.value.replace(/[^0-9]/g, "");
     if (newValue === "") newValue = "0";
@@ -84,7 +90,10 @@ export function SettingsComponentNumber({
           })}
         >
           <button
-            onClick={() => setValue(Math.min(Number(value) + 1, max))}
+            onClick={() => {
+              setValue(Math.min(Number(value) + 1, max));
+              clickPlay();
+            }}
             className={clsx(
               "flex h-[20px] w-[28px] cursor-pointer items-center justify-center border-b focus:outline-0",
               {
@@ -96,7 +105,10 @@ export function SettingsComponentNumber({
             <ArrowUpIcon />
           </button>
           <button
-            onClick={() => setValue(Math.max(Number(value) - 1, min))}
+            onClick={() => {
+              setValue(Math.max(Number(value) - 1, min));
+              clickPlay();
+            }}
             className="flex h-[20px] w-[29px] cursor-pointer items-center justify-center focus:outline-0"
           >
             <ArrowDownIcon />
