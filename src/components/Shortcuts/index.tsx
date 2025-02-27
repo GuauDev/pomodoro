@@ -91,7 +91,7 @@ export const Shortcuts = () => {
       <ShortcutsComponent shortcut={["Ctrl", "M"]} title="Open Menu" />
       <ShortcutsComponent shortcut={["Ctrl", "S"]} title="View Statistics" />
       <ShortcutsComponent shortcut={["Ctrl", "G"]} title="Open Preferencess" />
-      <ShortcutsComponent shortcut={["Ctrl", "M"]} title="View Shortcuts" />
+      <ShortcutsComponent shortcut={["Ctrl", "K"]} title="View Shortcuts" />
     </div>
   );
 };
