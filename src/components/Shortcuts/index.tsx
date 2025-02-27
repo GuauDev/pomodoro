@@ -1,37 +1,21 @@
 import clsx from "clsx";
-import { XIcon } from "../../assets/icons";
-import { SettingsComponentSwitch } from "../SettingsComponentSwitch";
-import { SettingsComponentNumber } from "../SettingsComponentNumber";
 import { useRunningStore, useSettingsStore } from "../../lib/store";
+import { XIcon } from "../../assets/icons";
 import clickSound from "../../assets/sounds/soft.wav";
 import { useEffect, useRef } from "react";
+import { ShortcutsComponent } from "../ShortcutsComponent";
 
-export default function PreferencesModal() {
-  const {
-    darkMode,
-    setDarkMode,
-    focusLength,
-    setFocusLength,
-    pomodorosUntilLongBreak,
-    setPomodorosUntilLongBreak,
-    shortBreakLength,
-    setShortBreakLength,
-    longBreakLength,
-    setLongBreakLength,
-    autoResumeTimer,
-    setAutoResumeTimer,
-    sound,
-    setSound,
-    notifications,
-    setNotifications,
-  } = useSettingsStore();
-  const { setIsPreferencesOpen, state, isPreferencesOpen } = useRunningStore();
+export const Shortcuts = () => {
+  const { darkMode, sound } = useSettingsStore();
+  const { state, isShortcutsOpen, setIsShortcutsOpen } = useRunningStore();
   const click = new Audio(clickSound);
+
   const clickPlay = () => {
     if (sound) {
       click.play();
     }
   };
+
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -39,22 +23,22 @@ export default function PreferencesModal() {
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
       ) {
-        setIsPreferencesOpen(false);
+        setIsShortcutsOpen(false);
         clickPlay();
       }
     }
 
-    if (isPreferencesOpen) {
+    if (isShortcutsOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isPreferencesOpen]);
+  }, [isShortcutsOpen]);
   return (
     <div
       className={clsx(
-        "absolute flex h-[610px] w-[448px] flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
+        "absolute top-[50%] left-[50%] flex h-[470px] w-[400px] translate-x-[-50%] translate-y-[-50%] transform flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
         {
           "bg-red-50": darkMode === false && state === "focus",
           "bg-green-50": darkMode === false && state === "short break",
@@ -62,7 +46,7 @@ export default function PreferencesModal() {
           "bg-red-950 text-red-50": darkMode === true && state === "focus",
           "bg-green-950": darkMode === true && state === "short break",
           "bg-blue-950": darkMode === true && state === "long break",
-          hidden: !isPreferencesOpen,
+          hidden: !isShortcutsOpen,
         },
       )}
       ref={modalRef}
@@ -78,11 +62,11 @@ export default function PreferencesModal() {
             "text-blue-50": darkMode === true && state === "long break",
           })}
         >
-          Settings
+          Shortcuts
         </h2>
         <button
           onClick={() => {
-            setIsPreferencesOpen(false);
+            setIsShortcutsOpen(false);
             clickPlay();
           }}
           className="cursor-pointer"
@@ -101,43 +85,13 @@ export default function PreferencesModal() {
           </span>
         </button>
       </div>
-      <SettingsComponentSwitch
-        title="Dark mode"
-        setIsOn={setDarkMode}
-        isOn={darkMode}
-      />
-      <SettingsComponentNumber
-        title="Focus length"
-        setValue={setFocusLength}
-        value={focusLength}
-      />
-      <SettingsComponentNumber
-        title="Pomodoros until long break"
-        value={pomodorosUntilLongBreak}
-        setValue={setPomodorosUntilLongBreak}
-      />
-      <SettingsComponentNumber
-        title="Short break length"
-        setValue={setShortBreakLength}
-        value={shortBreakLength}
-      />
-      <SettingsComponentNumber
-        title="Long break length"
-        setValue={setLongBreakLength}
-        value={longBreakLength}
-      />
-      <SettingsComponentSwitch
-        title="Auto resume timer"
-        isOn={autoResumeTimer}
-        setIsOn={setAutoResumeTimer}
-      />
-      <SettingsComponentSwitch title="Sound" isOn={sound} setIsOn={setSound} />
-
-      <SettingsComponentSwitch
-        title="Notifications"
-        isOn={notifications}
-        setIsOn={setNotifications}
-      />
+      <ShortcutsComponent shortcut={["Space"]} title="Play/Pause" />
+      <ShortcutsComponent shortcut={["→"]} title="Skip to Next" />
+      <ShortcutsComponent shortcut={["Esc"]} title="Close All Modals" />
+      <ShortcutsComponent shortcut={["Ctrl", "M"]} title="Open Menu" />
+      <ShortcutsComponent shortcut={["Ctrl", "S"]} title="View Statistics" />
+      <ShortcutsComponent shortcut={["Ctrl", "G"]} title="Open Preferencess" />
+      <ShortcutsComponent shortcut={["Ctrl", "M"]} title="View Shortcuts" />
     </div>
   );
-}
+};

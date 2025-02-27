@@ -8,7 +8,7 @@ import {
   ThreeDotsOutlineIcon,
 } from "./assets/icons";
 import clsx from "clsx";
-import Menu from "./components/menu";
+import Menu from "./components/Menu";
 import {
   DarkShortFocus,
   DarkShortLongBreak,
@@ -20,7 +20,7 @@ import {
 import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Shortcuts } from "./components/shortcuts";
+import { Shortcuts } from "./components/Shortcuts";
 import PreferencesModal from "./components/Preferences";
 import { useRunningStore, useSettingsStore } from "./lib/store";
 
@@ -208,10 +208,22 @@ export default function App() {
     document.querySelector("link[rel='icon']")?.setAttribute("href", url);
   }, [darkMode, state]);
 
-  useHotkeys("right", onNext);
-  useHotkeys("space", onPausePlay);
-  useHotkeys("ctrl+m", onMenu);
-  useHotkeys("esc", onCloseModals);
+  useHotkeys("right", (event) => {
+    event.preventDefault();
+    onNext;
+  });
+  useHotkeys("space", (event) => {
+    event.preventDefault();
+    onPausePlay();
+  });
+  useHotkeys("ctrl+m", (event) => {
+    event.preventDefault();
+    onMenu();
+  });
+  useHotkeys("esc", (event) => {
+    event.preventDefault();
+    onCloseModals();
+  });
   useHotkeys("ctrl+k", (event) => {
     event.preventDefault();
     openShortcuts();
@@ -332,13 +344,7 @@ export default function App() {
             )}
             type="button"
           >
-            <Menu
-              state={state}
-              openShortcuts={openShortcuts}
-              isOpen={isMenuOpen}
-              setIsOpen={setIsMenuOpen}
-              openPreferences={openPreferences}
-            />
+            <Menu />
 
             <ThreeDotsOutlineIcon />
           </button>
@@ -389,10 +395,8 @@ export default function App() {
             <FastForwardIcon />
           </button>
         </div>
-        {isShortcutsOpen ? <Shortcuts /> : null}
-        {isPreferencesOpen ? (
-          <PreferencesModal colorMode={"dark"} state={state} />
-        ) : null}
+        <Shortcuts />
+        <PreferencesModal />
       </div>
     </main>
   );

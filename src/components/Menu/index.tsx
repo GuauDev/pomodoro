@@ -1,22 +1,25 @@
 import clsx from "clsx";
 import { CharBarIcon, GearSixIcon, KeyIcon } from "../../assets/icons";
 import { useEffect, useRef } from "react";
-import { useSettingsStore } from "../../lib/store";
+import { useRunningStore, useSettingsStore } from "../../lib/store";
+import clickSound from "../../assets/sounds/soft.wav";
 
-export default function Menu({
-  state,
-  openShortcuts,
-  isOpen,
-  setIsOpen,
-  openPreferences,
-}: {
-  state: "focus" | "short break" | "long break";
-  openShortcuts: () => void;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  openPreferences: () => void;
-}) {
-  const { darkMode } = useSettingsStore();
+export default function Menu() {
+  const { darkMode, sound } = useSettingsStore();
+  const {
+    setIsMenuOpen,
+    isMenuOpen,
+    state,
+    setIsPreferencesOpen,
+    setIsShortcutsOpen,
+  } = useRunningStore();
+  const click = new Audio(clickSound);
+  const clickPlay = () => {
+    if (sound) {
+      click.play();
+    }
+  };
+
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -24,17 +27,25 @@ export default function Menu({
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        setIsMenuOpen(false);
+        clickPlay();
       }
     }
 
-    if (isOpen) {
+    if (isMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isMenuOpen]);
+
+  const openPreferences = () => {
+    setIsPreferencesOpen(true);
+  };
+  const openShortcuts = () => {
+    setIsShortcutsOpen(true);
+  };
   return (
     <div
       className={clsx(
@@ -52,7 +63,7 @@ export default function Menu({
             state === "short break" && darkMode === true,
           "border-white-alpha-50 bg-blue-950 text-blue-50":
             state === "long break" && darkMode === true,
-          hidden: !isOpen,
+          hidden: !isMenuOpen,
         },
       )}
       ref={modalRef}
