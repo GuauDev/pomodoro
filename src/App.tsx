@@ -52,6 +52,7 @@ export default function App() {
     pomodorosUntilLongBreak,
     autoResumeTimer,
     sound,
+    notifications,
   } = useSettingsStore();
   //sounds
   const click = new Audio(clickSound);
@@ -70,6 +71,7 @@ export default function App() {
 
   const [minutesLeft, setMinutesLeft] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [enableNotications, setEnableNotifications] = useState(true);
 
   useEffect(() => {
     if (state === "focus") {
@@ -121,6 +123,7 @@ export default function App() {
     }
   }, [seconds, longBreakLength, shortBreakLength, focusLength, state]);
   const onNext = () => {
+    setEnableNotifications(false);
     clickPlay();
     if (state === "focus") {
       if (pomodoros >= pomodorosUntilLongBreak) {
@@ -203,6 +206,24 @@ export default function App() {
 
     const blob = new Blob([svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
+    if (notifications && enableNotications) {
+      if (Notification.permission === "granted") {
+        new Notification(`Pomodoro Timer`, {
+          body: `Time for ${state}`,
+          icon: url,
+        });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            new Notification(`Pomodoro Timer`, {
+              body: `Time for ${state}`,
+              icon: url,
+            });
+          }
+        });
+      }
+    }
+    setEnableNotifications(true);
 
     // Cambia el favicon
     document.querySelector("link[rel='icon']")?.setAttribute("href", url);

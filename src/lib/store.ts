@@ -37,7 +37,7 @@ export const useSettingsStore = create(
         setAutoResumeTimer: (autoResumeTimer: boolean) => set({ autoResumeTimer }),
         sound: true,
         setSound: (sound: boolean) => set({ sound }),
-        notifications: true,
+        notifications: false,
         setNotifications: (notifications: boolean) => set({ notifications }),
     }),
     {
