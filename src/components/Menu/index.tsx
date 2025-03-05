@@ -12,6 +12,7 @@ export default function Menu() {
     state,
     setIsPreferencesOpen,
     setIsShortcutsOpen,
+    setIsStatisticsOpen,
   } = useRunningStore();
   const click = new Audio(clickSound);
   const clickPlay = () => {
@@ -46,6 +47,10 @@ export default function Menu() {
   const openShortcuts = () => {
     setIsShortcutsOpen(true);
   };
+
+  const openStatistics = () => {
+    setIsStatisticsOpen(true);
+  };
   return (
     <div
       className={clsx(
@@ -71,7 +76,12 @@ export default function Menu() {
       <nav>
         <ul className="flex flex-col">
           {[
-            { icon: CharBarIcon, text: "Statistics", shortcut: ["Ctrl", "S"] },
+            {
+              icon: CharBarIcon,
+              text: "Statistics",
+              shortcut: ["Ctrl", "S"],
+              event: openStatistics,
+            },
 
             {
               icon: GearSixIcon,

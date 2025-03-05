@@ -22,7 +22,12 @@ import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Shortcuts } from "./components/Shortcuts";
 import PreferencesModal from "./components/Preferences";
-import { useRunningStore, useSettingsStore } from "./lib/store";
+import {
+  usePomodoroStore,
+  useRunningStore,
+  useSettingsStore,
+} from "./lib/store";
+import { Statistics } from "./components/Statisticts";
 
 export default function App() {
   const {
@@ -43,6 +48,8 @@ export default function App() {
     setIsPreferencesOpen,
     setPomodoros,
     subtractSeconds,
+    setIsStatisticsOpen,
+    isStatisticsOpen,
   } = useRunningStore();
   const {
     darkMode,
@@ -54,6 +61,7 @@ export default function App() {
     sound,
     notifications,
   } = useSettingsStore();
+  const { addSession, checkWeeklyReset } = usePomodoroStore();
   //sounds
   const click = new Audio(clickSound);
   const alarm = new Audio(alarmSound);
@@ -71,7 +79,7 @@ export default function App() {
 
   const [minutesLeft, setMinutesLeft] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(0);
-  const [enableNotications, setEnableNotifications] = useState(true);
+  const [enableNotications, setEnableNotifications] = useState(false);
 
   useEffect(() => {
     if (state === "focus") {
@@ -99,6 +107,8 @@ export default function App() {
       } else {
         onPause();
       }
+      addSession(focusLength);
+      setEnableNotifications(true);
     } else if (seconds >= shortBreakLength * 60 && state === "short break") {
       alarmPlay();
       setState("focus");
@@ -108,8 +118,8 @@ export default function App() {
       } else {
         onPause();
       }
-
       setSeconds(0);
+      setEnableNotifications(true);
     } else if (seconds >= longBreakLength * 60 && state === "long break") {
       alarmPlay();
       setState("focus");
@@ -120,10 +130,10 @@ export default function App() {
       } else {
         onPause();
       }
+      setEnableNotifications(true);
     }
   }, [seconds, longBreakLength, shortBreakLength, focusLength, state]);
   const onNext = () => {
-    setEnableNotifications(false);
     clickPlay();
     if (state === "focus") {
       if (pomodoros >= pomodorosUntilLongBreak) {
@@ -187,6 +197,10 @@ export default function App() {
     clickPlay();
   };
 
+  const openStatistics = () => {
+    setIsStatisticsOpen(!isStatisticsOpen);
+  };
+
   document.title = `${String(minutesLeft).padStart(2, "0")}:${String(secondsLeft).padStart(2, "0")}`;
   useEffect(() => {
     let svg = "";
@@ -223,7 +237,7 @@ export default function App() {
         });
       }
     }
-    setEnableNotifications(true);
+    setEnableNotifications(false);
 
     // Cambia el favicon
     document.querySelector("link[rel='icon']")?.setAttribute("href", url);
@@ -231,7 +245,7 @@ export default function App() {
 
   useHotkeys("right", (event) => {
     event.preventDefault();
-    onNext;
+    onNext();
   });
   useHotkeys("space", (event) => {
     event.preventDefault();
@@ -253,6 +267,13 @@ export default function App() {
     event.preventDefault();
     openPreferences();
   });
+  useHotkeys("ctrl+s", (event) => {
+    event.preventDefault();
+    openStatistics();
+  });
+  useEffect(() => {
+    checkWeeklyReset();
+  }, []);
   return (
     <main
       className={clsx(
@@ -418,6 +439,7 @@ export default function App() {
         </div>
         <Shortcuts />
         <PreferencesModal />
+        <Statistics />
       </div>
     </main>
   );

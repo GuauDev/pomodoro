@@ -62,6 +62,8 @@ interface RunningState {
   setIsShortcutsOpen: (isShortcutsOpen: boolean) => void;
   isPreferencesOpen:boolean;
   setIsPreferencesOpen: (isPreferencesOpen: boolean) => void;
+  isStatisticsOpen:boolean;
+  setIsStatisticsOpen: (isStatisticsOpen: boolean) => void;
   pomodoros:number;
   setPomodoros:(pomodoros:number)=>void;
   subtractSeconds:()=>void;
@@ -84,6 +86,8 @@ export const useRunningStore = create(
       setIsShortcutsOpen: (isShortcutsOpen: boolean) => set({ isShortcutsOpen }),
       isPreferencesOpen: false,
       setIsPreferencesOpen: (isPreferencesOpen: boolean) => set({ isPreferencesOpen }),
+      isStatisticsOpen: false,
+      setIsStatisticsOpen: (isStatisticsOpen: boolean) => set({ isStatisticsOpen }),
       pomodoros: 1,
       setPomodoros: (pomodoros: number) => set({ pomodoros }),
       subtractSeconds: () => set((state) => ({ seconds: state.seconds + 1 })
@@ -103,9 +107,11 @@ export const useRunningStore = create(
         setIsMenuOpen: state.setIsMenuOpen,
         setIsShortcutsOpen: state.setIsShortcutsOpen,
         setIsPreferencesOpen: state.setIsPreferencesOpen,
+        setIsStatisticsOpen: state.setIsStatisticsOpen,
         setPomodoros: state.setPomodoros,
         subtractSeconds: state.subtractSeconds,
         intervalId: null,
+        isStatisticsOpen: false,
         seconds: state.seconds,
         isMenuOpen:false,
         isShortcutsOpen:false,
@@ -115,3 +121,80 @@ export const useRunningStore = create(
     }
   )
 );
+
+
+
+
+interface PomodoroStats {
+  sessions: number;
+  totalTime: number; // Minutes
+  sessionsPerDay: { day: string; sessions: number }[];
+  lastReset: string; // Date string (YYYY-MM-DD)
+}
+
+interface PomodoroStore {
+  stats: PomodoroStats;
+  addSession: (duration: number) => void;
+  resetStats: () => void;
+  checkWeeklyReset: () => void;
+}
+
+export const usePomodoroStore = create<PomodoroStore>()(
+  persist(
+    (set, get) => ({
+      stats: {
+        sessions: 0,
+        totalTime: 0,
+        sessionsPerDay: [],
+        lastReset: new Date().toISOString().split("T")[0], // Store only the date
+      },
+
+      addSession: (duration) =>
+        set((state) => {
+          const today = new Date().toLocaleDateString("en-US", { weekday: "short" });
+          const updatedSessionsPerDay = [...state.stats.sessionsPerDay];
+
+          const index = updatedSessionsPerDay.findIndex((d) => d.day === today);
+          if (index !== -1) {
+            updatedSessionsPerDay[index].sessions += 1;
+          } else {
+            updatedSessionsPerDay.push({ day: today, sessions: 1 });
+          }
+
+          return {
+            stats: {
+              ...state.stats,
+              sessions: state.stats.sessions + 1,
+              totalTime: state.stats.totalTime + duration,
+              sessionsPerDay: updatedSessionsPerDay,
+            },
+          };
+        }),
+
+      resetStats: () =>
+        set({
+          stats: {
+            sessions: 0,
+            totalTime: 0,
+            sessionsPerDay: [],
+            lastReset: new Date().toISOString().split("T")[0],
+          },
+        }),
+
+      checkWeeklyReset: () => {
+        const { stats, resetStats } = get();
+        const lastResetDate = new Date(stats.lastReset);
+        const currentDate = new Date();
+        const daysDifference = Math.floor(
+          (currentDate.getTime() - lastResetDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (daysDifference >= 7) {
+          resetStats();
+        }
+      },
+    }),
+    { name: "pomodoro-store" }
+  )
+);
+
