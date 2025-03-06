@@ -6,7 +6,7 @@ import { useRunningStore, useSettingsStore } from "../../lib/store";
 import clickSound from "../../assets/sounds/soft.wav";
 import { useEffect, useRef } from "react";
 
-export default function PreferencesModal() {
+export function Preferences() {
   const {
     darkMode,
     setDarkMode,
@@ -54,7 +54,7 @@ export default function PreferencesModal() {
   return (
     <div
       className={clsx(
-        "absolute flex h-[610px] w-[448px] flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
+        "absolute flex h-[610px] w-[448px] max-w-screen flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
         {
           "bg-red-50": darkMode === false && state === "focus",
           "bg-green-50": darkMode === false && state === "short break",

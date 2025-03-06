@@ -38,7 +38,7 @@ export const Shortcuts = () => {
   return (
     <div
       className={clsx(
-        "absolute top-[50%] left-[50%] flex h-[470px] w-[400px] translate-x-[-50%] translate-y-[-50%] transform flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
+        "absolute top-[50%] left-[50%] flex h-[470px] w-[400px] max-w-screen translate-x-[-50%] translate-y-[-50%] transform flex-col rounded-[24px] p-[24px] shadow-[0px_1px_6px_rgba(0,0,0,0.039),_0px_5.5px_16px_rgba(0,0,0,0.19)]",
         {
           "bg-red-50": darkMode === false && state === "focus",
           "bg-green-50": darkMode === false && state === "short break",

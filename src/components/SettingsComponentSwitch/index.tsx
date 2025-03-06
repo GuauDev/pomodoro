@@ -21,7 +21,7 @@ export const SettingsComponentSwitch = ({
   };
   return (
     <div className="flex items-center justify-between py-[20px]">
-      <p
+      <label
         className={clsx("text-text-regular font-text-regular", {
           "text-red-900": darkMode === false && state === "focus",
           "text-green-900": darkMode === false && state === "short break",
@@ -30,9 +30,13 @@ export const SettingsComponentSwitch = ({
           "text-green-50": darkMode === true && state === "short break",
           "text-blue-50": darkMode === true && state === "long break",
         })}
+        onClick={() => {
+          setIsOn(!isOn);
+          clickPlay();
+        }}
       >
         {title}
-      </p>
+      </label>
 
       <button
         onClick={() => {

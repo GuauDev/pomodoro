@@ -30,7 +30,8 @@ export function SettingsComponentNumber({
 
   return (
     <div className="flex items-center justify-between py-[12px]">
-      <p
+      <label
+        htmlFor={title}
         className={clsx("text-text-regular font-text-regular", {
           "text-red-900": darkMode === false && state === "focus",
           "text-green-900": darkMode === false && state === "short break",
@@ -41,7 +42,7 @@ export function SettingsComponentNumber({
         })}
       >
         {title}
-      </p>
+      </label>
       <div
         className={clsx(
           "flex h-[40px] w-[96px] items-center rounded-[8px] border",
@@ -72,6 +73,7 @@ export function SettingsComponentNumber({
                 darkMode === true && state === "long break",
             },
           )}
+          id={title}
         />
         <div
           className={clsx("flex h-[38px] w-[29px] flex-col border-l", {

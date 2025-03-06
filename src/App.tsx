@@ -21,13 +21,14 @@ import clickSound from "./assets/sounds/soft.wav";
 import alarmSound from "./assets/sounds/endring.mp3";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Shortcuts } from "./components/Shortcuts";
-import PreferencesModal from "./components/Preferences";
+import { Preferences } from "./components/Preferences";
 import {
   usePomodoroStore,
   useRunningStore,
   useSettingsStore,
 } from "./lib/store";
 import { Statistics } from "./components/Statisticts";
+import { useRef } from "react";
 
 export default function App() {
   const {
@@ -81,49 +82,23 @@ export default function App() {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [enableNotications, setEnableNotifications] = useState(false);
 
-  useEffect(() => {
-    if (state === "focus") {
-      setMinutesLeft(Math.floor((focusLength * 60 - seconds) / 60));
-      setSecondsLeft((focusLength * 60 - seconds) % 60);
-    } else if (state === "short break") {
-      setMinutesLeft(Math.floor((shortBreakLength * 60 - seconds) / 60));
-      setSecondsLeft((shortBreakLength * 60 - seconds) % 60);
-    } else if (state === "long break") {
-      setMinutesLeft(Math.floor((longBreakLength * 60 - seconds) / 60));
-      setSecondsLeft((longBreakLength * 60 - seconds) % 60);
-    }
+  const calculateMinutesSecondsLeft = (minutes: number) => {
+    setMinutesLeft(Math.floor((minutes * 60 - seconds) / 60));
+    setSecondsLeft((focusLength * 60 - seconds) % 60);
+  };
 
-    if (seconds >= focusLength * 60 && state === "focus") {
+  useEffect(() => {
+    let mins = 0;
+    if (state === "focus") {
+      mins = focusLength;
+    } else if (state === "short break") {
+      mins = shortBreakLength;
+    } else if (state === "long break") {
+      mins = longBreakLength;
+    }
+    calculateMinutesSecondsLeft(mins);
+    if (seconds >= mins * 60) {
       alarmPlay();
-      if (pomodoros >= pomodorosUntilLongBreak) {
-        setState("long break");
-        setPomodoros(0);
-      } else {
-        setState("short break");
-      }
-      setSeconds(0);
-      if (autoResumeTimer) {
-        onPlay();
-      } else {
-        onPause();
-      }
-      addSession(focusLength);
-      setEnableNotifications(true);
-    } else if (seconds >= shortBreakLength * 60 && state === "short break") {
-      alarmPlay();
-      setState("focus");
-      setPomodoros(pomodoros + 1);
-      if (autoResumeTimer) {
-        onPlay();
-      } else {
-        onPause();
-      }
-      setSeconds(0);
-      setEnableNotifications(true);
-    } else if (seconds >= longBreakLength * 60 && state === "long break") {
-      alarmPlay();
-      setState("focus");
-      setPomodoros(pomodoros + 1);
       setSeconds(0);
       if (autoResumeTimer) {
         onPlay();
@@ -131,6 +106,18 @@ export default function App() {
         onPause();
       }
       setEnableNotifications(true);
+      if (state === "focus") {
+        addSession(focusLength);
+        if (pomodoros >= pomodorosUntilLongBreak) {
+          setState("long break");
+          setPomodoros(0);
+        } else {
+          setState("short break");
+        }
+      } else {
+        setState("focus");
+        setPomodoros(pomodoros + 1);
+      }
     }
   }, [seconds, longBreakLength, shortBreakLength, focusLength, state]);
   const onNext = () => {
@@ -142,10 +129,7 @@ export default function App() {
       } else {
         setState("short break");
       }
-    } else if (state === "short break") {
-      setState("focus");
-      setPomodoros(pomodoros + 1);
-    } else if (state === "long break") {
+    } else {
       setState("focus");
       setPomodoros(pomodoros + 1);
     }
@@ -184,7 +168,7 @@ export default function App() {
     setIsMenuOpen(false);
     setIsShortcutsOpen(false);
     setIsPreferencesOpen(false);
-    clickPlay();
+    setIsStatisticsOpen(false);
   };
 
   const openShortcuts = () => {
@@ -200,7 +184,7 @@ export default function App() {
   const openStatistics = () => {
     setIsStatisticsOpen(!isStatisticsOpen);
   };
-
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   document.title = `${String(minutesLeft).padStart(2, "0")}:${String(secondsLeft).padStart(2, "0")}`;
   useEffect(() => {
     let svg = "";
@@ -220,16 +204,17 @@ export default function App() {
 
     const blob = new Blob([svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
+
     if (notifications && enableNotications) {
       if (Notification.permission === "granted") {
-        new Notification(`Pomodoro Timer`, {
+        new Notification(`Pomodoggo Timer`, {
           body: `Time for ${state}`,
           icon: url,
         });
       } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then((permission) => {
           if (permission === "granted") {
-            new Notification(`Pomodoro Timer`, {
+            new Notification(`Pomodoggo Timer`, {
               body: `Time for ${state}`,
               icon: url,
             });
@@ -245,30 +230,37 @@ export default function App() {
 
   useHotkeys("right", (event) => {
     event.preventDefault();
+    onCloseModals();
     onNext();
   });
   useHotkeys("space", (event) => {
     event.preventDefault();
+    onCloseModals();
     onPausePlay();
   });
   useHotkeys("ctrl+m", (event) => {
     event.preventDefault();
+    onCloseModals();
     onMenu();
   });
   useHotkeys("esc", (event) => {
     event.preventDefault();
+    clickPlay();
     onCloseModals();
   });
   useHotkeys("ctrl+k", (event) => {
     event.preventDefault();
+    onCloseModals();
     openShortcuts();
   });
   useHotkeys("ctrl+g", (event) => {
     event.preventDefault();
+    onCloseModals();
     openPreferences();
   });
   useHotkeys("ctrl+s", (event) => {
     event.preventDefault();
+    onCloseModals();
     openStatistics();
   });
   useEffect(() => {
@@ -385,9 +377,8 @@ export default function App() {
               },
             )}
             type="button"
+            ref={menuButtonRef}
           >
-            <Menu />
-
             <ThreeDotsOutlineIcon />
           </button>
           <button
@@ -437,8 +428,9 @@ export default function App() {
             <FastForwardIcon />
           </button>
         </div>
+        <Menu menuButtonRef={menuButtonRef} />
         <Shortcuts />
-        <PreferencesModal />
+        <Preferences />
         <Statistics />
       </div>
     </main>
